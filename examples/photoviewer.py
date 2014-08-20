@@ -20,11 +20,11 @@ class PhotoViewer(scene.Scene):
         scene.run(self, scene.LANDSCAPE)
 
     def setup(self):
-        self.img = Image.open("diagonalLine.jpg")
+        self.img = Image.open("image.png")
         self.w, self.h = self.img.size
         self.x = self.size.w/2 - self.w/2
         self.y = self.size.h/2 - self.h/2
-        self.iid = scene.load_image_file("diagonalLine.jpg")
+        self.iid = scene.load_image_file("image.png")
         self.zoom = 1
         self.plusbutton = Button(self.size.w - 100, self.size.h - 100)
         self.minusbutton = Button(self.size.w - 100, self.size.h - 200)
