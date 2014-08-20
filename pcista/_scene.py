@@ -41,7 +41,7 @@ def no_tint():
     tint(0, 0, 0)
 
 def load_image(name):
-    load_image_file(get_image_path(name))
+    load_image_file(get_image_path(name), name)
 
 def image(name, x, y, w=0, h=0):
     if not name in _data.LOADED_IMGS.keys():
@@ -100,11 +100,14 @@ def get_image_path(image_name):
         return path
     return None
 
-def load_image_file(name):
+def load_image_file(name, iid=None):
     if name in _data.LOADED_IMGS.keys():
         unload_image(name)
     img = pygame.image.load(name).convert_alpha()
-    _data.LOADED_IMGS[name] = img
+    if iid != None:
+        _data.LOADED_IMGS[iid] = img
+    else:
+        _data.LOADED_IMGS[name] = img
     return name
 
 def unload_image(name):
