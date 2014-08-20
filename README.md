@@ -1,4 +1,4 @@
-pythonista-pc
+pcista
 =============
 
 Port of some Python iOS specific modules to PC.<br>
