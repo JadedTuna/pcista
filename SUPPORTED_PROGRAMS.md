@@ -12,10 +12,10 @@ airhockey-menu      | supported
 
 Links
 -----
-[pull-to-refresh]
-[photoviewer]
-[Jumpy Octopus]
-[airhockey-menu] (code in the original post)
+[pull-to-refresh]<br>
+[photoviewer]<br>
+[Jumpy Octopus]<br>
+[airhockey-menu] (code in the original post)<br>
 
   [pull-to-refresh]: http://omz-forums.appspot.com/pythonista/post/5906241792507904
   [photoviewer]:     http://www.google.com
