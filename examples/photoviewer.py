@@ -1,6 +1,7 @@
 # This is a quick and dirty photo viewer, created to test out pcista image drawing
 # Requires a file named image.png to be in the local directory
-import Image, scene
+import scene
+from PIL import Image # I need to import Image from PIL to make it work on computer
 
 class Button(object):
     def __init__(self, x, y):
