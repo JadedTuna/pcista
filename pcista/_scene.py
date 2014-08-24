@@ -18,7 +18,7 @@ _data.DEFSIZE       = _data.SIZE_IPAD3
 _data.letters       = string.uppercase + string.lowercase
 
 _data.BG_COLOUR     = (  0,   0,   0)
-_data.STROKE_COLOUR = (  0,   0,   0)
+_data.STROKE_COLOUR = (255, 255, 255)
 _data.FILL_COLOUR   = (255, 255, 255)
 _data.TINT_COLOUR   = (255, 255, 255)
 
@@ -32,16 +32,19 @@ def stroke_weight(weight):
     _data.stroke_weight = weight
 
 def no_stroke():
-    stroke_weight(0)
+    _data.STROKE_COLOUR = None
 
 def no_fill():
-    fill(0, 0, 0)
+    _data.FILL_COLOUR = None
 
 def no_tint():
-    tint(0, 0, 0)
+    _data.TINT_COLOUR = None
 
 def load_image(name):
-    load_image_file(get_image_path(name), name)
+    path = get_image_path(name)
+    if not path:
+        raise IOError("built-in image not found")
+    load_image_file(path, name)
 
 def image(name, x, y, w=0, h=0):
     if not name in _data.LOADED_IMGS.keys():
@@ -64,26 +67,29 @@ def background(r, g, b, a=1.0):
 def rect(x, y, w, h):
     x, y, w, h = [int(i) for i in (x, y, w, h)]
     y = _data.DEFSIZE[1] - (y + h)
-    if _data.stroke_weight > 0:
-        pygame.draw.rect(_data.screen, _data.STROKE_COLOUR, (x, y, w, h))
-        y += _data.stroke_weight
-        x += _data.stroke_weight
-        w -= _data.stroke_weight * 2
-        h -= _data.stroke_weight * 2
-    
-    pygame.draw.rect(_data.screen, _data.FILL_COLOUR, (x, y, w, h))
+    if _data.FILL_COLOUR:
+        pygame.draw.rect(_data.screen, _data.FILL_COLOUR, (x, y, w, h))
+    if _data.stroke_weight:
+        # That's a hack, I know. But pygame.draw.rect(..., _data.stroke_weight)
+        # acts weirdly
+        sw = _data.stroke_weight
+        pygame.draw.rect(_data.screen, _data.STROKE_COLOUR, (x, y + (h - sw), w, sw))
+        pygame.draw.rect(_data.screen, _data.STROKE_COLOUR, (x, y, w, sw))
+        pygame.draw.rect(_data.screen, _data.STROKE_COLOUR, (x, y, sw, h))
+        pygame.draw.rect(_data.screen, _data.STROKE_COLOUR, (x + (w - sw), y, sw, h))
 
 def ellipse(x, y, w, h):
     x, y, w, h = [int(i) for i in (x, y, w, h)]
     y = _data.DEFSIZE[1] - (y + h)
-    if _data.stroke_weight > 0:
-        pygame.draw.ellipse(_data.screen, _data.STROKE_COLOUR, (x, y, w, h))
+    if _data.stroke_weight:
+        pygame.draw.ellipse(_data.screen, _data.STROKE_COLOUR, (x, y, w, h), _data.stroke_weight)
         y += _data.stroke_weight
         x += _data.stroke_weight
         w -= _data.stroke_weight * 2
         h -= _data.stroke_weight * 2
     
-    pygame.draw.ellipse(_data.screen, _data.FILL_COLOUR, (x, y, w, h))
+    if _data.FILL_COLOUR:
+        pygame.draw.ellipse(_data.screen, _data.FILL_COLOUR, (x, y, w, h))
     
 def fill(r, g, b, a=1.0):
     _data.FILL_COLOUR = (r*255., g*255., b*255.)
@@ -100,15 +106,24 @@ def get_image_path(image_name):
         return path
     return None
 
-def load_image_file(name, iid=None):
+def load_image_file(name, _iid=None):
     if name in _data.LOADED_IMGS.keys():
         unload_image(name)
     img = pygame.image.load(name).convert_alpha()
-    if iid != None:
-        _data.LOADED_IMGS[iid] = img
+    
+    if _iid != None:
+        iid = _iid
     else:
-        _data.LOADED_IMGS[name] = img
-    return name
+        iid = _data.new_image_id(_data.LOADED_IMGS.keys(), _data.letters)
+    _data.LOADED_IMGS[iid] = img
+    return iid
+
+def line(x1, y1, x2, y2):
+    if _data.stroke_weight:
+        x1, y1, x2, y2 = [int(i) for i in (x1, y1, x2, y2)]
+        y1 = _data.DEFSIZE[1] - (y1 + _data.stroke_weight/2)
+        y2 = _data.DEFSIZE[1] - (y2 + _data.stroke_weight/2)
+        pygame.draw.line(_data.screen, _data.STROKE_COLOUR, (x1, y1), (x2, y2), _data.stroke_weight)
 
 def unload_image(name):
     del _data.LOADED_IMGS[name]
@@ -147,7 +162,7 @@ def _run(scene, orientation, frame_interval, anti_alias):
                             _data.DEFSIZE)
     pygame.init()
     
-    _data.anti_alias = 1#anti_alias
+    _data.anti_alias = anti_alias
     _data.screen  = pygame.display.set_mode(_data.DEFSIZE)
     pygame.display.set_caption(getattr(scene,
                                         "_pgwindowtitle",
