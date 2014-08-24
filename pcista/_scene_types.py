@@ -100,7 +100,7 @@ def _rect_right(rect):
     return rect.x + rect.w
 
 def _rect_size(rect):
-    return (rect.w, rect.h)
+    return Size(rect.w, rect.h)
 
 def _rect_top(rect):
     return rect.y + rect.h
@@ -149,7 +149,7 @@ class Color(object):
         settattr(self, ("r", "g", "b", "a")[item], value)
     
     def __setstate__(self, state):
-        self.x, self.y, self.w, self.h = state
+        self.r, self.g, self.b, self.a = state
     
     as_tuple   = _color_as_tuple
     
@@ -195,7 +195,7 @@ class Point(object):
         settattr(self, ("x", "y")[item], value)
     
     def __setstate__(self, state):
-        self.x, self.y, self.w, self.h = state
+        self.x, self.y = state
     
     as_tuple   = _point_as_tuple
     distance   = _point_distance
@@ -300,7 +300,7 @@ class Size(object):
         settattr(self, ("w", "h")[item], value)
     
     def __setstate__(self, state):
-        self.x, self.y, self.w, self.h = state
+        self.w, self.h = state
     
     as_tuple   = _size_as_tuple
     
